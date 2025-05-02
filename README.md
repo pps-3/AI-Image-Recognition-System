@@ -81,7 +81,7 @@ ai-vision-lab/
 
 ## Contributors
 
-- Sai Bindu
-- Preetisaran
-- V. Venkatesh
-- P. Joy Das
+- B.Sai Bindu
+- P.Preeti Saran
+- V.Venkatesh
+- P.Joy Das
