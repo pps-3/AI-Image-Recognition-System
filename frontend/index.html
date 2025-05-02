@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Lab | Image Recognition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --bg-main: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --bg-card: linear-gradient(145deg, #ffffff, #f5f7fa);
+            --text-main: var(--gray-800);
+            --text-secondary: var(--gray-600);
+            --border-color: var(--gray-300);
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --primary-rgb: 67, 97, 238;
+            --secondary-rgb: 114, 9, 183;
+            --accent-rgb: 247, 37, 133;
+        }
+
+        [data-theme="dark"] {
+            --primary: #4cc9f0;
+            --primary-dark: #4895ef;
+            --secondary: #7b2cbf;
+            --accent: #f72585;
+            --dark: #0d1b2a;
+            --light: #e0e1dd;
+            --success: #2dc653;
+            --warning: #ffaa00;
+            --danger: #e63946;
+            --gray-100: #1b263b;
+            --gray-200: #1b263b;
+            --gray-300: #415a77;
+            --gray-400: #415a77;
+            --gray-500: #778da9;
+            --gray-600: #778da9;
+            --gray-700: #e0e1dd;
+            --gray-800: #e0e1dd;
+            --gray-900: #e0e1dd;
+            --bg-main: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+            --bg-card: linear-gradient(145deg, #1b263b, #0d1b2a);
+            --text-main: var(--gray-800);
+            --text-secondary: var(--gray-600);
+            --border-color: var(--gray-300);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --shadow-hover: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow-hover);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .upload-section {
+            flex: 1;
+            min-width: 300px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.8s ease-in-out;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px var(--shadow-hover);
+        }
+
+        .results-section {
+            flex: 1;
+            min-width: 300px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: all 0.3s ease;
+            animation: slideInRight 0.8s ease-in-out;
+        }
+
+        .results-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px var(--shadow-hover);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary);
+            background-color: var(--gray-100);
+        }
+
+        .dropzone.highlight {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .dropzone i {
+            font-size: 3rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropzone:hover i {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .dropzone p {
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropzone small {
+            color: var(--gray-500);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+
+        .btn-disabled:hover {
+            background: var(--gray-400);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .preview-container {
+            margin-top: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .prediction-card.animate {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .alt-predictions {
+            margin-top: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .alt-predictions.animate {
+            animation: fadeInUp 0.5s ease-out 0.2s forwards;
+        }
+
+        .alt-prediction {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            border-radius: 6px;
+            background: var(--gray-100);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        .alt-prediction.animate {
+            animation: fadeInRight 0.3s ease-out forwards;
+        }
+
+        .alt-prediction:nth-child(1) { animation-delay: 0.3s; }
+        .alt-prediction:nth-child(2) { animation-delay: 0.4s; }
+
+        .alt-label {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .alt-confidence {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .results-placeholder {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .results-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading p {
+            margin-top: 1rem;
+            color: var(--gray-600);
+        }
+
+        .result-image-container {
+            text-align: center;
+            margin-top: 1.5rem;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .result-image-container.animate {
+            animation: zoomIn 0.5s ease-out 0.5s forwards;
+        }
+
+        .result-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            position: relative;
+            padding-bottom: 4rem;
+        }
+
+        .team-credits {
+            margin-top: 2rem;
+            position: relative;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: var(--bg-card);
+            box-shadow: 0 5px 20px var(--shadow-color);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden;
+        }
+
+        .team-credits::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .team-credits h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            position: relative;
+            display: inline-block;
+        }
+
+        .team-credits h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0.7);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .team-credits:hover h3::after {
+            transform: scaleX(1);
+        }
+
+        .team-members {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .team-member {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            background: rgba(var(--primary-rgb), 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            background: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover::before {
+            transform: scaleY(1);
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .member-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .error-message {
+            background: rgba(239, 71, 111, 0.1);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes fadeInRight {
+            from { 
+                opacity: 0; 
+                transform: translateX(-10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0); 
+            }
+        }
+
+        @keyframes zoomIn {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Vision Lab</h1>
+            <p class="tagline">Advanced image recognition powered by machine learning</p>
+            <button class="theme-toggle" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <div class="main-content">
+            <div class="upload-section">
+                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Upload Image</h2>
+                
+                <div class="dropzone" id="dropzone">
+                    <i class="fas fa-image"></i>
+                    <p>Drag & drop your image here</p>
+                    <small>or click to browse files</small>
+                    <input type="file" id="file-input" class="file-input" accept="image/*">
+                </div>
+                
+                <div class="preview-container" id="preview-container">
+                    <img id="preview-image" class="preview-image" alt="Preview">
+                </div>
+                
+                <button id="predict-btn" class="btn btn-disabled" disabled>
+                    <i class="fas fa-brain"></i> Analyze Image
+                </button>
+                
+                <div class="error-message" id="error-message"></div>
+            </div>
+
+            <div class="results-section">
+                <h2 class="section-title"><i class="fas fa-chart-pie"></i> Recognition Results</h2>
+                
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Analyzing your image...</p>
+                </div>
+                
+                <div class="results-placeholder" id="results-placeholder">
+                    <i class="fas fa-search"></i>
+                    <p>Upload an image to see AI recognition results</p>
+                </div>
+                
+                <div id="results-container" style="display: none;">
+                    <div class="prediction-card">
+                        <div class="prediction-header">
+                            <div class="prediction-label" id="top-label">-</div>
+                            <div class="prediction-confidence" id="top-confidence">-</div>
+                        </div>
+                        <p>Primary match identified by our AI</p>
+                    </div>
+                    
+                    <div class="alt-predictions">
+                        <h3>Alternative Matches</h3>
+                        <div id="alt-predictions-list"></div>
+                    </div>
+                    
+                    <div class="result-image-container">
+                        <img id="result-image" class="result-image" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="team-credits">
+                <h3>Created with ❤️ by</h3>
+                <div class="team-members">
+                    <div class="team-member">
+                        <div class="member-name">Bindusri</div>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-name">Preetisaran</div>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-name">V. Venkatesh</div>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-name">P. Joy Das</div>
+                    </div>
+                </div>
+            </div>
+            <p class="copyright"> 2025 AI Vision Lab | Powered by TensorFlow & MobileNetV2</p>
+        </footer>
+
+    <script>
+        // DOM Elements
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const predictBtn = document.getElementById('predict-btn');
+        const errorMessage = document.getElementById('error-message');
+        const loading = document.getElementById('loading');
+        const resultsPlaceholder = document.getElementById('results-placeholder');
+        const resultsContainer = document.getElementById('results-container');
+        const topLabel = document.getElementById('top-label');
+        const topConfidence = document.getElementById('top-confidence');
+        const altPredictionsList = document.getElementById('alt-predictions-list');
+        const resultImage = document.getElementById('result-image');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Variables
+        let selectedFile = null;
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        // Initialize theme
+        if (isDarkMode) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+
+        // Event Listeners
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('highlight');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('highlight');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('highlight');
+            
+            if (e.dataTransfer.files.length) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        predictBtn.addEventListener('click', analyzeImage);
+
+        // Functions
+        function handleFileSelect(file) {
+            // Check if file is an image
+            if (!file.type.match('image.*')) {
+                showError('Please select an image file (JPEG, PNG, etc.)');
+                return;
+            }
+
+            selectedFile = file;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Enable predict button
+            predictBtn.classList.remove('btn-disabled');
+            predictBtn.disabled = false;
+            
+            // Hide error message if visible
+            errorMessage.style.display = 'none';
+            
+            // Reset results
+            resetResults();
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function resetResults() {
+            resultsContainer.style.display = 'none';
+            resultsPlaceholder.style.display = 'block';
+            loading.style.display = 'none';
+            topLabel.textContent = '-';
+            topConfidence.textContent = '-';
+            altPredictionsList.innerHTML = '';
+            resultImage.style.display = 'none';
+        }
+
+        async function analyzeImage() {
+            if (!selectedFile) return;
+            
+            // Show loading state
+            loading.style.display = 'block';
+            resultsPlaceholder.style.display = 'none';
+            resultsContainer.style.display = 'none';
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            
+            try {
+                // Send to backend
+                const response = await fetch('http://127.0.0.1:5001/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to analyze image');
+                }
+                
+                const data = await response.json();
+                
+                // Display results
+                displayResults(data);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message || 'Something went wrong. Please try again.');
+                loading.style.display = 'none';
+                resultsPlaceholder.style.display = 'block';
+            }
+        }
+
+        function displayResults(data) {
+            // Hide loading
+            loading.style.display = 'none';
+            
+            // Show results container
+            resultsContainer.style.display = 'block';
+            
+            // Update top prediction
+            topLabel.textContent = capitalizeFirstLetter(data.label.replace('_', ' '));
+            topConfidence.textContent = `${(data.confidence * 100).toFixed(1)}%`;
+            
+            // Update confidence color based on value
+            const confidence = data.confidence * 100;
+            if (confidence > 80) {
+                topConfidence.style.background = 'var(--success)';
+            } else if (confidence > 50) {
+                topConfidence.style.background = 'var(--primary)';
+            } else if (confidence > 30) {
+                topConfidence.style.background = 'var(--warning)';
+            } else {
+                topConfidence.style.background = 'var(--danger)';
+            }
+            
+            // Clear and update alternative predictions
+            altPredictionsList.innerHTML = '';
+            
+            if (data.all_predictions && data.all_predictions.length > 1) {
+                // Skip the first prediction as it's already displayed as the top match
+                for (let i = 1; i < data.all_predictions.length; i++) {
+                    const pred = data.all_predictions[i];
+                    const altPrediction = document.createElement('div');
+                    altPrediction.className = 'alt-prediction';
+                    altPrediction.innerHTML = `
+                        <div class="alt-label">${capitalizeFirstLetter(pred.label.replace('_', ' '))}</div>
+                        <div class="alt-confidence">${(pred.confidence * 100).toFixed(1)}%</div>
+                    `;
+                    altPredictionsList.appendChild(altPrediction);
+                }
+            } else {
+                altPredictionsList.innerHTML = '<p>No alternative matches found</p>';
+            }
+            
+            // Display the image
+            resultImage.src = previewImage.src;
+            resultImage.style.display = 'block';
+            
+            // Trigger animations
+            setTimeout(() => {
+                document.querySelector('.prediction-card').classList.add('animate');
+                document.querySelector('.alt-predictions').classList.add('animate');
+                document.querySelectorAll('.alt-prediction').forEach(el => el.classList.add('animate'));
+                document.querySelector('.result-image-container').classList.add('animate');
+            }, 100);
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.split(' ').map(word => {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join(' ');
+        }
+    </script>
+</body>
+</html>
