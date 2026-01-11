@@ -81,7 +81,7 @@ ai-vision-lab/
 
 ## Contributors
 
+- P.Preethi Saran(Team Lead)
 - B.Sai Bindu
-- P.Preeti Saran
 - V.Venkatesh
 - P.Joy Das
